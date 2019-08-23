@@ -1,13 +1,14 @@
 const graphql = require('graphql');
 const _ = require('lodash');
+const Movie = require('../models/movie');
 
 const {
     GraphQLObjectType,
     GraphQLString,
     GraphQLInt,
-    GraphQLSchema,
     GraphQLID,
-    GraphQLList
+    GraphQLList,
+    GraphQLSchema
 } = graphql;
 
 
@@ -51,6 +52,25 @@ const DirectorType = new GraphQLObjectType({
     })
 })
 
+
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addMovies: {
+            type: MovieType,
+            args: {
+                name: { type: GraphQLString },
+                year: { type: GraphQLInt }
+            },
+            resolve(parent, args) {
+                let movie_details = new Movie(args);
+                return movie_details.save();
+            }
+        }
+    }
+})
+
+
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
@@ -85,5 +105,6 @@ const RootQuery = new GraphQLObjectType({
 })
 
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: Mutation
 })
